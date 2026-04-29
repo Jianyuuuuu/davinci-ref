@@ -94,6 +94,11 @@ def search(query: str, top: int = DEFAULT_TOP, json_output: bool = False) -> lis
                 "section": chunks[i]["section"],
                 "content": chunks[i]["content"],
                 "source": chunks[i]["source"],
+                "page": chunks[i].get("page", 0),
+                "toc_title": chunks[i].get("toc_title", ""),
+                "toc_page": chunks[i].get("toc_page", 0),
+                "toc_level": chunks[i].get("toc_level", 0),
+                "toc_path": chunks[i].get("toc_path", ""),
                 "score": round(scores[i], 3),
             })
 
@@ -117,6 +122,15 @@ def format_results(results: list[dict], query: str) -> str:
         out.append(f"---\n**{chapter}**")
         if section:
             out.append(f"> {section}")
+        page = r.get("page", 0)
+        source_short = r["source"].replace("_structured", "").replace("DaVinci_Resolve_", "DaVinci ")
+        toc_path = r.get("toc_path")
+        if page:
+            out.append(f"> 📄 第 {page} 页 | 来源: {source_short}")
+        else:
+            out.append(f"> 来源: {source_short}")
+        if toc_path:
+            out.append(f"> 目录: {toc_path}")
         out.append(content_snippet)
         out.append("")
 
